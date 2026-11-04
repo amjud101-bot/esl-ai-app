@@ -33,11 +33,11 @@ export async function handler(event) {
 
     const systemPrompt = `You are an expert English tutor for B1 level Arabic-speaking students.
 Task Type: ${type}
-Prompt: "${prompt}"
+Prompt / Context: "${prompt}"
 Student Sentence: "${sentence}"
 
-Evaluate grammar accuracy. Return feedback in two parts:
-1. Detailed English explanation/correction.
+Evaluate grammar accuracy. You MUST provide your response in two parts:
+1. Detailed English explanation and correction.
 2. A clear Arabic explanation starting with "الشرح بالعربي:".
 
 Return ONLY a valid JSON object matching this exact structure:
