@@ -1,71 +1,81 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI } from "@google/genai";
 
-export async function handler(event) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+export async function handler(event, context) {
+  // 1. Handle HTTP Method
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ feedback: "Method Not Allowed" }),
+    };
   }
 
   try {
-    const { sentence, prompt, type } = JSON.parse(event.body || '{}');
+    // 2. Parse Incoming Request Data
+    const body = JSON.parse(event.body || "{}");
+    const { sentence, prompt, type } = body;
 
+    if (!sentence) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ feedback: "No sentence provided.", correct: false }),
+      };
+    }
+
+    // 3. Initialize Gemini Client
     const apiKey = process.env.GEMINI_API_KEY;
-
     if (!apiKey) {
       return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          correct: false,
-          feedback: 'Error: GEMINI_API_KEY environment variable is not set in Netlify.',
-          score: 0
-        })
+        statusCode: 500,
+        body: JSON.stringify({ feedback: "Server configuration error: GEMINI_API_KEY is missing in Netlify settings.", correct: false }),
       };
     }
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const systemPrompt = type === 'roleplay'
-      ? `You are a helpful ESL practice partner. Respond to the user's roleplay input: "${sentence}". Context: ${prompt || 'General conversation'}. Return ONLY a JSON object: {"correct": true, "feedback": "Your reply", "score": 100}`
-      : `You are an expert ESL teacher. Evaluate this sentence: "${sentence}". Prompt context: ${prompt || 'General'}. Return ONLY a JSON object with keys: "correct" (boolean), "feedback" (string explaining errors or giving encouragement), "score" (number 0-100), and "corrected" (string with corrected sentence if needed). No markdown code blocks.`;
+    // 4. Construct System Instruction Prompt
+    const systemPrompt = `You are an expert English language tutor evaluating a student's answer.
+Task Type: ${type || 'comparative'}
+Prompt given to student: "${prompt || 'Compare two things'}"
+Student's input: "${sentence}"
 
+Analyze the student's grammar, vocabulary, and relevance.
+Return ONLY a valid JSON object matching this exact structure:
+{
+  "correct": true or false,
+  "feedback": "Detailed explanation and guidance for the student."
+}`;
+
+    // 5. Call Gemini API
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: "gemini-2.5-flash",
       contents: systemPrompt,
+      config: {
+        responseMimeType: "application/json"
+      }
     });
 
-    let rawText = response.text || '{}';
-    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const responseText = response.text;
+    const parsedData = JSON.parse(responseText);
 
-    let result;
-    try {
-      result = JSON.parse(rawText);
-    } catch (e) {
-      result = {
-        correct: true,
-        feedback: rawText,
-        score: 100
-      };
-    }
-
+    // 6. Return Response to Frontend
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        correct: result.correct ?? true,
-        feedback: result.feedback || rawText,
-        score: result.score || 100,
-        corrected: result.corrected || sentence
-      })
+        correct: parsedData.correct ?? true,
+        feedback: parsedData.feedback || "Good job practicing!"
+      }),
     };
-  } catch (err) {
+
+  } catch (error) {
+    console.error("Function Error:", error);
     return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         correct: false,
-        feedback: `API Error: ${err.message}`,
-        score: 0
-      })
+        feedback: `AI Grader Error: ${error.message}`
+      }),
     };
   }
 }
