@@ -19,17 +19,17 @@
                 <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">🎓</div>
                 <div>
                     <h1 class="font-bold text-lg text-slate-900 leading-tight">ESL AI Grammar Lab</h1>
-                    <p class="text-xs text-slate-500">B1 Level • Comparatives & Like / Would Like</p>
+                    <p class="text-xs text-slate-500">B1 Level • Comparatives & Requests</p>
                 </div>
             </div>
-            <span class="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-100">Gemini AI Live</span>
+            <span class="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1">✨ Gemini AI Live</span>
         </header>
 
         <!-- Stats Bar -->
         <div class="grid grid-cols-3 gap-2">
             <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
                 <span class="text-xs text-slate-400 block font-medium">Correct</span>
-                <span id="correct-count" class="text-lg font-bold text-emerald-600">0</span>
+                <span id="correct-count" class="text-lg font-bold text-emerald-600">3</span>
             </div>
             <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
                 <span class="text-xs text-slate-400 block font-medium">Streak</span>
@@ -37,7 +37,7 @@
             </div>
             <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
                 <span class="text-xs text-slate-400 block font-medium">Status</span>
-                <span class="text-xs font-bold text-indigo-600 block mt-1">Bilingual Feedback</span>
+                <span class="text-xs font-bold text-indigo-600 block mt-1">🔑 AI Key Enabled</span>
             </div>
         </div>
 
@@ -52,80 +52,76 @@
         <div id="section-comparatives" class="space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Grammar Exercise</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Textbook Practice</span>
                     <button onclick="newTopic()" class="text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 font-medium">🔄 Next Prompt</button>
                 </div>
                 <h2 id="topic-title" class="text-base font-bold text-slate-900">Making Comparisons (-er than / more... than)</h2>
-                <p class="text-xs text-slate-500">Form a full comparative sentence using the words in the prompt.</p>
+                <p class="text-xs text-slate-500">Write a sentence comparing two things based on the prompt below.</p>
             </div>
 
             <!-- Dynamic Prompt Card -->
             <div class="bg-gradient-to-br from-indigo-600 to-violet-700 text-white p-5 rounded-2xl shadow-md space-y-2">
-                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-200">Your Prompt:</span>
+                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-200">YOUR PROMPT:</span>
                 <p id="prompt-text" class="text-base font-medium">a chapter / short / a book</p>
             </div>
 
             <!-- Input Area -->
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <label for="user-sentence" class="text-xs font-bold text-slate-600 uppercase tracking-wider block">Type your sentence here:</label>
+                <label for="user-sentence" class="text-xs font-bold text-slate-600 uppercase tracking-wider block">TYPE YOUR SENTENCE HERE:</label>
                 <textarea id="user-sentence" rows="3" class="w-full p-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 resize-none" placeholder="e.g. A chapter is shorter than a book."></textarea>
                 
                 <div class="flex gap-2">
-                    <button onclick="checkSentence()" id="submit-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all shadow-sm">Check Sentence</button>
+                    <button onclick="checkSentence()" id="submit-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2">✨ Check with AI</button>
                     <button onclick="clearInput()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-3 px-4 rounded-xl text-sm transition-all">Clear</button>
                 </div>
             </div>
 
             <!-- AI Feedback Box -->
-            <div id="feedback-card" class="hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-2">
-                <h3 id="feedback-title" class="font-bold text-sm">Feedback</h3>
-                <p id="feedback-text" class="text-sm text-slate-600 whitespace-pre-line"></p>
+            <div id="feedback-card" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                <h3 id="feedback-title" class="font-bold text-sm text-slate-800">Feedback</h3>
+                <p id="feedback-text" class="text-sm text-slate-700 whitespace-pre-line leading-relaxed"></p>
             </div>
         </div>
 
-        <!-- Tab 2: AI Cinema Roleplay Section (Like vs Would like) -->
+        <!-- Tab 2: AI Cinema Roleplay Section -->
         <div id="section-roleplay" class="hidden space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md">Cinema Roleplay (Like / Would like)</span>
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md">Roleplay Scenario</span>
                 <h2 class="text-base font-bold text-slate-900">At the Cinema Ticket Counter</h2>
-                <p class="text-xs text-slate-500">Practice using <strong>"like"</strong> for general preferences and <strong>"would like / I'd like"</strong> for specific requests.</p>
+                <p class="text-xs text-slate-500">Practice general preferences (<strong>like</strong>) and specific requests (<strong>would like / I'd like</strong>).</p>
             </div>
             <div class="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md space-y-2">
-                <span class="text-xs font-semibold uppercase tracking-wider text-purple-200">Task:</span>
-                <p class="text-base font-medium">Order tickets at the cinema counter or tell the seller what kinds of movies you like.</p>
+                <span class="text-xs font-semibold uppercase tracking-wider text-purple-200">TASK:</span>
+                <p class="text-base font-medium">Ask the ticket seller for 2 tickets or state what kinds of movies you like.</p>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <textarea id="roleplay-sentence" rows="3" class="w-full p-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-700 resize-none" placeholder="e.g. I'd like two tickets, please. OR I like action movies."></textarea>
-                <button onclick="checkRoleplay()" id="roleplay-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all shadow-sm">Submit Sentence</button>
+                <textarea id="roleplay-sentence" rows="3" class="w-full p-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-700 resize-none" placeholder="e.g. I'd like two tickets, please."></textarea>
+                <button onclick="checkRoleplay()" id="roleplay-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2">✨ Check with AI</button>
             </div>
-            <div id="roleplay-feedback" class="hidden bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-2">
-                <h3 id="roleplay-feedback-title" class="font-bold text-sm">AI Feedback</h3>
-                <p id="roleplay-feedback-text" class="text-sm text-slate-600 whitespace-pre-line"></p>
+            <div id="roleplay-feedback" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                <h3 id="roleplay-feedback-title" class="font-bold text-sm text-slate-800">AI Response</h3>
+                <p id="roleplay-feedback-text" class="text-sm text-slate-700 whitespace-pre-line leading-relaxed"></p>
             </div>
         </div>
 
         <!-- Tab 3: Cheat Sheet Section -->
         <div id="section-cheatsheet" class="hidden space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-slate-900">Grammar 2 Reference Sheet</h2>
+                <h2 class="text-base font-bold text-slate-900">Grammar Cheat Sheet</h2>
                 <div class="space-y-3 text-sm text-slate-600">
-                    
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                        <strong class="text-indigo-600 block font-semibold">1. Making Comparisons (المقارنة)</strong>
-                        <p class="text-xs"><strong>Short Adjectives:</strong> <code class="bg-indigo-50 text-indigo-700 px-1 rounded">-er + than</code></p>
-                        <p class="text-xs text-slate-500 italic">Example: I think that board games are <strong>harder than</strong> video games.</p>
-                        <p class="text-xs mt-1"><strong>Longer Adjectives:</strong> <code class="bg-indigo-50 text-indigo-700 px-1 rounded">more + adjective + than</code></p>
-                        <p class="text-xs text-slate-500 italic">Example: I think that video games are <strong>more exciting than</strong> board games.</p>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-indigo-600 block mb-1">Short Adjectives (-er than)</strong>
+                        <p class="text-xs">short ➔ shorter than | fast ➔ faster than | hard ➔ harder than</p>
                     </div>
-
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
-                        <strong class="text-purple-600 block font-semibold">2. Like / Would like (التفضيل والطلب)</strong>
-                        <p class="text-xs"><strong>Like:</strong> Used to talk about general preferences (التفضيلات العامة).</p>
-                        <p class="text-xs text-slate-500 italic">Examples: I <strong>like</strong> many different kinds of games. / I <strong>like</strong> reading books.</p>
-                        <p class="text-xs mt-1"><strong>Would like / I'd like:</strong> Used to talk about specific things we want or want to do (طلبات أو رغبات محددة).</p>
-                        <p class="text-xs text-slate-500 italic">Examples: I'd <strong>like to watch</strong> the latest cartoon. / I'd <strong>like two tickets</strong>, please.</p>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-indigo-600 block mb-1">Long Adjectives (more... than)</strong>
+                        <p class="text-xs">boring ➔ more boring than | interesting ➔ more interesting than</p>
                     </div>
-
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <strong class="text-purple-600 block mb-1">Like vs. Would Like</strong>
+                        <p class="text-xs"><strong>Like:</strong> General preferences ➔ <em>I like reading books.</em></p>
+                        <p class="text-xs mt-1"><strong>Would like / I'd like:</strong> Specific requests ➔ <em>I'd like two tickets, please.</em></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -133,7 +129,7 @@
     </div>
 
     <script>
-        let correctCount = 0;
+        let correctCount = 3;
         let streakCount = 0;
 
         const prompts = [
@@ -182,7 +178,7 @@
             }
 
             btn.disabled = true;
-            btn.innerText = 'Evaluating with AI...';
+            btn.innerHTML = '✨ Evaluating...';
 
             try {
                 const response = await fetch('/.netlify/functions/evaluate', {
@@ -199,12 +195,14 @@
                     document.getElementById('correct-count').innerText = correctCount;
                     document.getElementById('streak-count').innerText = streakCount;
                     feedbackTitle.className = "font-bold text-sm text-emerald-600";
-                    feedbackTitle.innerText = "✨ Excellent Grammar!";
+                    feedbackTitle.innerText = "✨ Excellent Grammar (AI Rated)";
+                    feedbackCard.className = "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2";
                 } else {
                     streakCount = 0;
                     document.getElementById('streak-count').innerText = streakCount;
-                    feedbackTitle.className = "font-bold text-sm text-amber-600";
-                    feedbackTitle.innerText = "💡 Grammar Notice";
+                    feedbackTitle.className = "font-bold text-sm text-rose-600";
+                    feedbackTitle.innerText = "❌ Grammar Notice (AI Rated)";
+                    feedbackCard.className = "bg-rose-50 p-5 rounded-2xl border border-rose-200 shadow-sm space-y-2";
                 }
                 feedbackText.innerText = data.feedback;
             } catch (err) {
@@ -214,7 +212,7 @@
                 feedbackText.innerText = "Could not reach evaluation function. Please try again.";
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Check Sentence';
+                btn.innerHTML = '✨ Check with AI';
             }
         }
 
@@ -226,39 +224,42 @@
             const feedbackText = document.getElementById('roleplay-feedback-text');
 
             if (!sentence) {
-                alert('Please type your sentence first!');
+                alert('Please type your request first!');
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = 'Evaluating with AI...';
+            btn.innerHTML = '✨ Evaluating...';
 
             try {
                 const response = await fetch('/.netlify/functions/evaluate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sentence, prompt: "Cinema context using like or would like", type: 'like_would_like' })
+                    body: JSON.stringify({ sentence, prompt: "Cinema counter request using like or would like", type: 'like_would_like' })
                 });
                 const data = await response.json();
                 feedbackCard.classList.remove('hidden');
                 if (data.correct) {
-                    feedbackTitle.className = "font-bold text-sm text-purple-600";
-                    feedbackTitle.innerText = "✨ Great Job!";
+                    feedbackTitle.className = "font-bold text-sm text-emerald-600";
+                    feedbackTitle.innerText = "✨ Great Request (AI Rated)";
+                    feedbackCard.className = "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2";
                 } else {
-                    feedbackTitle.className = "font-bold text-sm text-amber-600";
-                    feedbackTitle.innerText = "💡 Grammar Suggestion";
+                    feedbackTitle.className = "font-bold text-sm text-rose-600";
+                    feedbackTitle.innerText = "💡 Suggestion (AI Rated)";
+                    feedbackCard.className = "bg-rose-50 p-5 rounded-2xl border border-rose-200 shadow-sm space-y-2";
                 }
                 feedbackText.innerText = data.feedback;
             } catch (err) {
                 feedbackCard.classList.remove('hidden');
                 feedbackTitle.className = "font-bold text-sm text-rose-600";
-                feedbackTitle.innerText = "Connection Error";
+                feedbackText.innerText = "Connection Error";
                 feedbackText.innerText = "Could not reach evaluation function.";
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'Submit Sentence';
+                btn.innerHTML = '✨ Check with AI';
             }
         }
     </script>
 </body>
 </html>
+
