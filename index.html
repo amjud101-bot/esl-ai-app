@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESL AI Grammar Lab</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --success: #16a34a;
+      --error: #dc2626;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 1rem; min-height: 100vh; }
+    .app-container { width: 100%; max-width: 480px; background: var(--card-bg); border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; height: fit-content; }
+    
+    .header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
+    .header h1 { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+    .header p { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+
+    .prompt-box { background: #eef2ff; border: 1px solid #c7d2fe; padding: 1rem; border-radius: 1rem; }
+    .prompt-box span { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; }
+    .prompt-box p { font-size: 1rem; font-weight: 600; color: var(--text); margin-top: 0.25rem; }
+
+    textarea { width: 100%; height: 90px; border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.75rem; font-size: 1rem; resize: none; outline: none; transition: border-color 0.2s; }
+    textarea:focus { border-color: var(--primary); }
+
+    .actions { display: flex; gap: 0.5rem; }
+    button { flex: 1; padding: 0.75rem; border: none; border-radius: 0.75rem; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #f1f5f9; color: var(--muted); }
+
+    .feedback-card { display: none; padding: 1rem; border-radius: 0.75rem; font-size: 0.9rem; line-height: 1.4; }
+    .feedback-card.correct { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--success); }
+    .feedback-card.incorrect { background: #fef2f2; border: 1px solid #fecaca; color: var(--error); }
+    .feedback-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h1>ESL AI Grammar Lab</h1>
+    <p>B1 Level • Comparatives & Requests</p>
+  </div>
+
+  <div class="prompt-box">
+    <span>Your Prompt:</span>
+    <p id="promptTopic">Compare "Playing sports" and "Playing video games".</p>
+  </div>
+
+  <textarea id="userInput" placeholder="Type your sentence here..."></textarea>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="submitSentence()">Check Sentence</button>
+    <button class="btn-secondary" onclick="newTopic()">New Topic</button>
+  </div>
+
+  <div id="feedbackCard" class="feedback-card">
+    <h3 id="feedbackTitle"></h3>
+    <p id="feedbackDetail"></p>
+  </div>
+</div>
+
+<script>
+  const topics = [
+    'Compare "Playing sports" and "Playing video games".',
+    'Compare "Reading books" and "Watching movies".',
+    'Make a polite request at a coffee shop using "would like".',
+    'Compare "Living in a city" and "Living in a village".'
+  ];
+
+  function newTopic() {
+    const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+    document.getElementById('promptTopic').innerText = randomTopic;
+    document.getElementById('userInput').value = '';
+    document.getElementById('feedbackCard').style.display = 'none';
+  }
+
+  async function submitSentence() {
+    const sentence = document.getElementById('userInput').value.trim();
+    const promptTopic = document.getElementById('promptTopic').innerText;
+    const card = document.getElementById('feedbackCard');
+    const title = document.getElementById('feedbackTitle');
+    const detail = document.getElementById('feedbackDetail');
+
+    if (!sentence) return;
+
+    card.style.display = 'block';
+    card.className = 'feedback-card';
+    title.innerText = "Evaluating...";
+    detail.innerText = "Checking with server...";
+
+    try {
+      const res = await fetch("/.netlify/functions/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sentence, promptTopic })
+      });
+
+      if (!res.ok) throw new Error("Server error");
+      const data = await res.json();
+
+      card.className = `feedback-card ${data.isCorrect ? 'correct' : 'incorrect'}`;
+      title.innerText = data.feedbackTitle;
+      detail.innerText = data.feedbackDetail;
+    } catch (err) {
+      // Fallback local check
+      const isCorrect = sentence.toLowerCase().includes('than') || sentence.toLowerCase().includes("like");
+      card.className = `feedback-card ${isCorrect ? 'correct' : 'incorrect'}`;
+      title.innerText = isCorrect ? "Good Attempt!" : "Grammar Notice";
+      detail.innerText = isCorrect ? "Your comparative structure is clear." : "Check your comparative word forms (e.g. -er than / more than).";
+    }
+  }
+</script>
+
+</body>
+</html>
