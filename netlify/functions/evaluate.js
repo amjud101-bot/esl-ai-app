@@ -31,24 +31,19 @@ export async function handler(event) {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    // Bilingual Tutor Prompt
-    const systemPrompt = `You are a friendly ESL teacher for B1 level students who speak Arabic.
+    const systemPrompt = `You are an expert English tutor for B1 level Arabic-speaking students.
 Task Type: ${type}
-Target Rules:
-- If type is 'comparative': Check correct use of short adjectives (-er than) and longer adjectives (more + adjective + than).
-- If type is 'like_would_like': Check correct use of 'like' for general preferences (e.g. I like action movies) vs 'would like / I'd like' for specific requests/desires (e.g. I'd like two tickets, please).
-
-Given Prompt: "${prompt}"
+Prompt: "${prompt}"
 Student Sentence: "${sentence}"
 
-Evaluate grammar accuracy. Provide feedback in two parts:
-1. English feedback (Clear correction/confirmation).
-2. A short Arabic explanation starting with "الشرح بالعربي:" to explain the rule clearly to the student.
+Evaluate grammar accuracy. Return feedback in two parts:
+1. Detailed English explanation/correction.
+2. A clear Arabic explanation starting with "الشرح بالعربي:".
 
-Return ONLY a valid JSON object matching this format:
+Return ONLY a valid JSON object matching this exact structure:
 {
   "correct": true or false,
-  "feedback": "English explanation here.\\n\\nالشرح بالعربي: Arabic explanation here."
+  "feedback": "English explanation here.\n\nالشرح بالعربي: Arabic explanation here."
 }`;
 
     const response = await ai.models.generateContent({
@@ -66,7 +61,7 @@ Return ONLY a valid JSON object matching this format:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         correct: Boolean(data.correct),
-        feedback: String(data.feedback || "Good effort!")
+        feedback: String(data.feedback || "Good job!")
       }),
     };
 
