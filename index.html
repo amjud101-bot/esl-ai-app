@@ -19,7 +19,7 @@
                 <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">🎓</div>
                 <div>
                     <h1 class="font-bold text-lg text-slate-900 leading-tight">ESL AI Grammar Lab</h1>
-                    <p class="text-xs text-slate-500">B1 Level • Comparatives & Requests</p>
+                    <p class="text-xs text-slate-500">B1 Level • Comparatives & Like/Would Like</p>
                 </div>
             </div>
             <span class="bg-emerald-50 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1">✨ Gemini AI Live</span>
@@ -29,7 +29,7 @@
         <div class="grid grid-cols-3 gap-2">
             <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
                 <span class="text-xs text-slate-400 block font-medium">Correct</span>
-                <span id="correct-count" class="text-lg font-bold text-emerald-600">3</span>
+                <span id="correct-count" class="text-lg font-bold text-emerald-600">0</span>
             </div>
             <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
                 <span class="text-xs text-slate-400 block font-medium">Streak</span>
@@ -77,50 +77,49 @@
             </div>
 
             <!-- AI Feedback Box -->
-            <div id="feedback-card" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                <h3 id="feedback-title" class="font-bold text-sm text-slate-800">Feedback</h3>
-                <p id="feedback-text" class="text-sm text-slate-700 whitespace-pre-line leading-relaxed"></p>
+            <div id="feedback-card" class="hidden p-5 rounded-2xl shadow-sm space-y-2">
+                <h3 id="feedback-title" class="font-bold text-sm">Feedback</h3>
+                <p id="feedback-text" class="text-sm whitespace-pre-line leading-relaxed"></p>
             </div>
         </div>
 
-        <!-- Tab 2: AI Cinema Roleplay Section -->
+        <!-- Tab 2: AI Cinema Roleplay Section (Like vs Would like) -->
         <div id="section-roleplay" class="hidden space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
                 <span class="text-xs font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-1 rounded-md">Roleplay Scenario</span>
                 <h2 class="text-base font-bold text-slate-900">At the Cinema Ticket Counter</h2>
-                <p class="text-xs text-slate-500">Practice general preferences (<strong>like</strong>) and specific requests (<strong>would like / I'd like</strong>).</p>
+                <p class="text-xs text-slate-500">Practice using <strong>like</strong> (general preferences) vs <strong>would like / I'd like</strong> (specific requests).</p>
             </div>
             <div class="bg-gradient-to-br from-purple-600 to-indigo-700 text-white p-5 rounded-2xl shadow-md space-y-2">
                 <span class="text-xs font-semibold uppercase tracking-wider text-purple-200">TASK:</span>
-                <p class="text-base font-medium">Ask the ticket seller for 2 tickets or state what kinds of movies you like.</p>
+                <p class="text-base font-medium">Use "like" or "would like" to talk about movies or buy tickets.</p>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                 <textarea id="roleplay-sentence" rows="3" class="w-full p-3 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-slate-700 resize-none" placeholder="e.g. I'd like two tickets, please."></textarea>
                 <button onclick="checkRoleplay()" id="roleplay-btn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-xl text-sm transition-all shadow-sm flex items-center justify-center gap-2">✨ Check with AI</button>
             </div>
-            <div id="roleplay-feedback" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                <h3 id="roleplay-feedback-title" class="font-bold text-sm text-slate-800">AI Response</h3>
-                <p id="roleplay-feedback-text" class="text-sm text-slate-700 whitespace-pre-line leading-relaxed"></p>
+            <div id="roleplay-feedback" class="hidden p-5 rounded-2xl shadow-sm space-y-2">
+                <h3 id="roleplay-feedback-title" class="font-bold text-sm">AI Response</h3>
+                <p id="roleplay-feedback-text" class="text-sm whitespace-pre-line leading-relaxed"></p>
             </div>
         </div>
 
-        <!-- Tab 3: Cheat Sheet Section -->
+        <!-- Tab 3: Cheat Sheet Section (Strictly Like vs Would like) -->
         <div id="section-cheatsheet" class="hidden space-y-4">
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                <h2 class="text-base font-bold text-slate-900">Grammar Cheat Sheet</h2>
+                <h2 class="text-base font-bold text-slate-900">Textbook Cheat Sheet</h2>
                 <div class="space-y-3 text-sm text-slate-600">
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <strong class="text-indigo-600 block mb-1">Short Adjectives (-er than)</strong>
-                        <p class="text-xs">short ➔ shorter than | fast ➔ faster than | hard ➔ harder than</p>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                        <strong class="text-indigo-600 block font-semibold">1. Making Comparisons</strong>
+                        <p class="text-xs"><strong>Short adjectives:</strong> -er + than (e.g., <em>shorter than</em>)</p>
+                        <p class="text-xs"><strong>Long adjectives:</strong> more + adjective + than (e.g., <em>more exciting than</em>)</p>
                     </div>
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <strong class="text-indigo-600 block mb-1">Long Adjectives (more... than)</strong>
-                        <p class="text-xs">boring ➔ more boring than | interesting ➔ more interesting than</p>
-                    </div>
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                        <strong class="text-purple-600 block mb-1">Like vs. Would Like</strong>
-                        <p class="text-xs"><strong>Like:</strong> General preferences ➔ <em>I like reading books.</em></p>
-                        <p class="text-xs mt-1"><strong>Would like / I'd like:</strong> Specific requests ➔ <em>I'd like two tickets, please.</em></p>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                        <strong class="text-purple-600 block font-semibold">2. Like / Would like</strong>
+                        <p class="text-xs"><strong>Like:</strong> General preferences (للتفضيلات العامة)</p>
+                        <p class="text-xs text-slate-500 italic">Example: I like reading books.</p>
+                        <p class="text-xs mt-1"><strong>Would like / I'd like:</strong> Specific requests/desires (للطلبات أو الرغبات المحددة)</p>
+                        <p class="text-xs text-slate-500 italic">Example: I'd like two tickets, please.</p>
                     </div>
                 </div>
             </div>
@@ -129,7 +128,7 @@
     </div>
 
     <script>
-        let correctCount = 3;
+        let correctCount = 0;
         let streakCount = 0;
 
         const prompts = [
@@ -194,20 +193,23 @@
                     streakCount++;
                     document.getElementById('correct-count').innerText = correctCount;
                     document.getElementById('streak-count').innerText = streakCount;
-                    feedbackTitle.className = "font-bold text-sm text-emerald-600";
-                    feedbackTitle.innerText = "✨ Excellent Grammar (AI Rated)";
-                    feedbackCard.className = "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2";
+                    // Green Styling for Correct
+                    feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-emerald-50 border border-emerald-200 text-emerald-900";
+                    feedbackTitle.className = "font-bold text-sm text-emerald-700";
+                    feedbackTitle.innerText = "✨ Correct! (AI Rated)";
                 } else {
                     streakCount = 0;
                     document.getElementById('streak-count').innerText = streakCount;
-                    feedbackTitle.className = "font-bold text-sm text-rose-600";
+                    // Red Styling for Incorrect
+                    feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-rose-50 border border-rose-200 text-rose-900";
+                    feedbackTitle.className = "font-bold text-sm text-rose-700";
                     feedbackTitle.innerText = "❌ Grammar Notice (AI Rated)";
-                    feedbackCard.className = "bg-rose-50 p-5 rounded-2xl border border-rose-200 shadow-sm space-y-2";
                 }
                 feedbackText.innerText = data.feedback;
             } catch (err) {
                 feedbackCard.classList.remove('hidden');
-                feedbackTitle.className = "font-bold text-sm text-rose-600";
+                feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-rose-50 border border-rose-200 text-rose-900";
+                feedbackTitle.className = "font-bold text-sm text-rose-700";
                 feedbackTitle.innerText = "Connection Error";
                 feedbackText.innerText = "Could not reach evaluation function. Please try again.";
             } finally {
@@ -240,19 +242,22 @@
                 const data = await response.json();
                 feedbackCard.classList.remove('hidden');
                 if (data.correct) {
-                    feedbackTitle.className = "font-bold text-sm text-emerald-600";
-                    feedbackTitle.innerText = "✨ Great Request (AI Rated)";
-                    feedbackCard.className = "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2";
+                    // Green Styling for Correct Roleplay
+                    feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-emerald-50 border border-emerald-200 text-emerald-900";
+                    feedbackTitle.className = "font-bold text-sm text-emerald-700";
+                    feedbackTitle.innerText = "✨ Great Job! (AI Rated)";
                 } else {
-                    feedbackTitle.className = "font-bold text-sm text-rose-600";
-                    feedbackTitle.innerText = "💡 Suggestion (AI Rated)";
-                    feedbackCard.className = "bg-rose-50 p-5 rounded-2xl border border-rose-200 shadow-sm space-y-2";
+                    // Red Styling for Incorrect Roleplay
+                    feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-rose-50 border border-rose-200 text-rose-900";
+                    feedbackTitle.className = "font-bold text-sm text-rose-700";
+                    feedbackTitle.innerText = "💡 Grammar Suggestion (AI Rated)";
                 }
                 feedbackText.innerText = data.feedback;
             } catch (err) {
                 feedbackCard.classList.remove('hidden');
-                feedbackTitle.className = "font-bold text-sm text-rose-600";
-                feedbackText.innerText = "Connection Error";
+                feedbackCard.className = "p-5 rounded-2xl shadow-sm space-y-2 bg-rose-50 border border-rose-200 text-rose-900";
+                feedbackTitle.className = "font-bold text-sm text-rose-700";
+                feedbackTitle.innerText = "Connection Error";
                 feedbackText.innerText = "Could not reach evaluation function.";
             } finally {
                 btn.disabled = false;
@@ -262,4 +267,3 @@
     </script>
 </body>
 </html>
-
