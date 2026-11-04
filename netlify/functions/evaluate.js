@@ -37,13 +37,13 @@ Prompt / Context: "${prompt}"
 Student Sentence: "${sentence}"
 
 Evaluate grammar accuracy. You MUST provide your response in two parts:
-1. Detailed English explanation and correction.
-2. A clear Arabic explanation starting with "الشرح بالعربي:".
+1. Clear English grammar explanation and correction.
+2. A full Arabic translation and explanation starting with "الشرح بالعربي:".
 
 Return ONLY a valid JSON object matching this exact structure:
 {
   "correct": true or false,
-  "feedback": "English explanation here.\n\nالشرح بالعربي: Arabic explanation here."
+  "feedback": "English explanation here.\n\nالشرح بالعربي: ضع الشرح الكامل باللغة العربية هنا."
 }`;
 
     const response = await ai.models.generateContent({
