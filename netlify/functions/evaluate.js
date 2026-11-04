@@ -1,41 +1,33 @@
 import { GoogleGenAI } from "@google/genai";
 
-export async function handler(event, context) {
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+
+export default async (req) => {
   // 1. Handle HTTP Method
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ feedback: "Method Not Allowed" }),
-    };
+  if (req.method !== "POST") {
+    return json({ feedback: "Method Not Allowed" }, 405);
   }
 
   try {
     // 2. Parse Incoming Request Data
-    const body = JSON.parse(event.body || "{}");
+    const body = await req.json().catch(() => ({}));
     const { sentence, prompt, type } = body;
 
     if (!sentence) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ feedback: "No sentence provided.", correct: false }),
-      };
+      return json({ feedback: "No sentence provided.", correct: false }, 400);
     }
 
-    // 3. Initialize Gemini Client
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ feedback: "Server configuration error: GEMINI_API_KEY is missing in Netlify settings.", correct: false }),
-      };
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
+    // 3. Initialize Gemini Client (credentials injected by Netlify AI Gateway)
+    const ai = new GoogleGenAI({});
 
     // 4. Construct System Instruction Prompt
     const systemPrompt = `You are an expert English language tutor evaluating a student's answer.
-Task Type: ${type || 'comparative'}
-Prompt given to student: "${prompt || 'Compare two things'}"
+Task Type: ${type || "comparative"}
+Prompt given to student: "${prompt || "Compare two things"}"
 Student's input: "${sentence}"
 
 Analyze the student's grammar, vocabulary, and relevance.
@@ -47,35 +39,25 @@ Return ONLY a valid JSON object matching this exact structure:
 
     // 5. Call Gemini API
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-flash-latest",
       contents: systemPrompt,
       config: {
-        responseMimeType: "application/json"
-      }
+        responseMimeType: "application/json",
+      },
     });
 
-    const responseText = response.text;
-    const parsedData = JSON.parse(responseText);
+    const parsedData = JSON.parse(response.text);
 
     // 6. Return Response to Frontend
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        correct: parsedData.correct ?? true,
-        feedback: parsedData.feedback || "Good job practicing!"
-      }),
-    };
-
+    return json({
+      correct: parsedData.correct ?? true,
+      feedback: parsedData.feedback || "Good job practicing!",
+    });
   } catch (error) {
     console.error("Function Error:", error);
-    return {
-      statusCode: 500,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        correct: false,
-        feedback: `AI Grader Error: ${error.message}`
-      }),
-    };
+    return json(
+      { correct: false, feedback: `AI Grader Error: ${error.message}` },
+      500
+    );
   }
-}
+};
