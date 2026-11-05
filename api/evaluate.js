@@ -1,13 +1,10 @@
-
 import { GoogleGenAI } from "@google/genai";
 
-// Models are tried in this order.
-const MODELS = [...new Set([
-  process.env.GEMINI_MODEL,
-  "gemini-3.8-flash",
-  "gemini-3.7-flash",
-  "gemini-3.6-flash"
-].filter(Boolean))].slice(0, 4);
+// Models are tried in this order. If one is retired or unavailable, the next one is used.
+// You can also set a GEMINI_MODEL variable in Vercel to choose the first model without editing code.
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.6-flash"].filter(Boolean))].slice(0, 3);
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function reply(res, statusCode, obj) {
   res.status(statusCode).setHeader("Content-Type", "application/json");
@@ -15,13 +12,7 @@ function reply(res, statusCode, obj) {
 }
 
 function failure(res, statusCode, en) {
-  return reply(res, statusCode, {
-    error: true,
-    correct: false,
-    feedback_en: en,
-    feedback_ar: "",
-    feedback: en
-  });
+  return reply(res, statusCode, { error: true, correct: false, feedback_en: en, feedback_ar: "", feedback: en });
 }
 
 function parseModelJson(text) {
@@ -30,7 +21,6 @@ function parseModelJson(text) {
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/```$/, "")
     .trim();
-
   return JSON.parse(cleaned);
 }
 
@@ -41,7 +31,6 @@ function buildPrompt({ type, sentence, prompt, question, target }) {
 - would like / I'd like = a specific thing we want, or want to do (I'd like to watch the latest cartoon. I'd like two tickets, please.)`;
 
   let task;
-
   if (type === "like_would_like") {
     task = `TASK: Cinema role-play. The cinema worker Alex asked: "${question || prompt}"
 What the student must do: ${target || "Answer Alex using like (general preference) or would like / I'd like (a specific want) correctly."}`;
@@ -75,7 +64,6 @@ export default async function handler(req, res) {
   }
 
   let body = req.body;
-
   if (typeof body === "string") {
     try {
       body = JSON.parse(body || "{}");
@@ -83,92 +71,56 @@ export default async function handler(req, res) {
       return failure(res, 400, "Bad request.");
     }
   }
-
   body = body || {};
 
   const sentence = String(body.sentence || "").trim().slice(0, 300);
   const prompt = String(body.prompt || "").trim().slice(0, 300);
   const question = String(body.question || "").trim().slice(0, 300);
   const target = String(body.target || "").trim().slice(0, 500);
-  const type = body.type === "like_would_like"
-    ? "like_would_like"
-    : "comparative";
+  const type = body.type === "like_would_like" ? "like_would_like" : "comparative";
 
   if (!sentence) {
     return failure(res, 400, "Please provide a sentence.");
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-
   if (!apiKey) {
-    return failure(
-      res,
-      500,
-      "Server error: GEMINI_API_KEY is not configured."
-    );
+    return failure(res, 500, "Server error: GEMINI_API_KEY is not configured.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
-  const contents = buildPrompt({
-    type,
-    sentence,
-    prompt,
-    question,
-    target
+  const contents = buildPrompt({ type, sentence, prompt, question, target });
+
+  // Google sometimes answers "high demand" (503). We try again quickly, then use the next model.
+  const plan = [];
+  MODELS.forEach((m, i) => {
+    plan.push(m);
+    if (i === 0) plan.push(m);
   });
 
-  for (const model of MODELS) {
-    for (let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const response = await ai.models.generateContent({
-          model,
-          contents,
-          config: {
-            responseMimeType: "application/json",
-            temperature: 0.2
-          }
-        });
-
-        const data = parseModelJson(response.text);
-
-        const en = String(data.feedback_en || "").trim() || "Good job!";
-        const ar = String(data.feedback_ar || "").trim() || "أحسنت!";
-
-        return reply(res, 200, {
-          correct: data.correct === true,
-          feedback_en: en,
-          feedback_ar: ar,
-          feedback: `${en}\n\nالشرح بالعربي: ${ar}`
-        });
-
-      } catch (error) {
-        const message = error?.message || String(error);
-        const status = Number(
-          error?.status || error?.code || error?.response?.status
-        );
-
-        console.error(
-          `Model ${model}, attempt ${attempt} failed:`,
-          message
-        );
-
-        const temporaryError =
-          status === 503 ||
-          /503|UNAVAILABLE|high demand/i.test(message);
-
-        if (temporaryError && attempt < 2) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          continue;
-        }
-
-        break;
-      }
+  for (let i = 0; i < plan.length; i++) {
+    const model = plan[i];
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents,
+        config: { responseMimeType: "application/json", temperature: 0.2 },
+      });
+      const data = parseModelJson(response.text);
+      const en = String(data.feedback_en || "").trim() || "Good job!";
+      const ar = String(data.feedback_ar || "").trim() || "أحسنت!";
+      return reply(res, 200, {
+        correct: data.correct === true,
+        feedback_en: en,
+        feedback_ar: ar,
+        feedback: `${en}\n\nالشرح بالعربي: ${ar}`,
+      });
+    } catch (error) {
+      const msg = error && error.message ? String(error.message) : String(error);
+      console.error(`Model ${model} failed:`, msg);
+      if (/503|UNAVAILABLE|429|high demand/i.test(msg) && plan[i + 1] === model) await sleep(600);
     }
   }
 
-  return failure(
-    res,
-    502,
-    "The AI service is temporarily unavailable. Please try again."
-  );
+  return failure(res, 502, "The AI is busy right now. Please press the button again.");
 }
