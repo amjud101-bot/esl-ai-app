@@ -4,16 +4,13 @@ import { GoogleGenAI } from "@google/genai";
 // You can also set a GEMINI_MODEL variable in Netlify to choose the first model without editing code.
 const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash"].filter(Boolean))].slice(0, 3);
 
-function reply(statusCode, obj) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(obj),
-  };
+function reply(res, statusCode, obj) {
+  res.status(statusCode).setHeader("Content-Type", "application/json");
+  return res.send(JSON.stringify(obj));
 }
 
-function failure(statusCode, en) {
-  return reply(statusCode, { error: true, correct: false, feedback_en: en, feedback_ar: "", feedback: en });
+function failure(res, statusCode, en) {
+  return reply(res, statusCode, { error: true, correct: false, feedback_en: en, feedback_ar: "", feedback: en });
 }
 
 function parseModelJson(text) {
@@ -59,17 +56,20 @@ Reply with JSON only, exactly in this shape:
 - feedback_ar: the same explanation in clear Arabic. Keep English example sentences in English.`;
 }
 
-export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return failure(405, "Method Not Allowed");
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return failure(res, 405, "Method Not Allowed");
   }
 
-  let body;
-  try {
-    body = JSON.parse(event.body || "{}");
-  } catch (e) {
-    return failure(400, "Bad request.");
+  let body = req.body;
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body || "{}");
+    } catch (e) {
+      return failure(res, 400, "Bad request.");
+    }
   }
+  body = body || {};
 
   const sentence = String(body.sentence || "").trim().slice(0, 300);
   const prompt = String(body.prompt || "").trim().slice(0, 300);
@@ -78,12 +78,12 @@ export async function handler(event) {
   const type = body.type === "like_would_like" ? "like_would_like" : "comparative";
 
   if (!sentence) {
-    return failure(400, "Please provide a sentence.");
+    return failure(res, 400, "Please provide a sentence.");
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return failure(500, "Server error: GEMINI_API_KEY is not configured.");
+    return failure(res, 500, "Server error: GEMINI_API_KEY is not configured.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -99,7 +99,7 @@ export async function handler(event) {
       const data = parseModelJson(response.text);
       const en = String(data.feedback_en || "").trim() || "Good job!";
       const ar = String(data.feedback_ar || "").trim() || "أحسنت!";
-      return reply(200, {
+      return reply(res, 200, {
         correct: data.correct === true,
         feedback_en: en,
         feedback_ar: ar,
@@ -110,7 +110,7 @@ export async function handler(event) {
     }
   }
 
-  return failure(
+  return failure(res, 
     502,
     "The AI service is not available right now. Please try again.");
 }
