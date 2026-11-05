@@ -2,11 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 // Models are tried in this order. If one is retired or unavailable, the next one is used.
 // You can also set a GEMINI_MODEL variable in Vercel to choose the first model without editing code.
-const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-1.5-flash", "gemini-1.5-pro"].filter(Boolean))].slice(0, 3);
-
-
-
-
+const MODELS = [...new Set([process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash"].filter(Boolean))].slice(0, 3);
 
 function reply(res, statusCode, obj) {
   res.status(statusCode).setHeader("Content-Type", "application/json");
@@ -116,4 +112,3 @@ export default async function handler(req, res) {
 
   return failure(res, 502, "The AI service is not available right now. Please try again.");
 }
-
