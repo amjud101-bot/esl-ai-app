@@ -219,10 +219,18 @@
             ar.classList.toggle('hidden', !parts.ar);
         }
 
+        // Try once more automatically if the AI is busy, so students rarely see an error.
         async function callEvaluate(payload) {
+            const first = await callEvaluateOnce(payload);
+            if (!first.error) return first;
+            await new Promise(r => setTimeout(r, 1500));
+            return await callEvaluateOnce(payload);
+        }
+
+        async function callEvaluateOnce(payload) {
             const offline = {
                 error: true,
-                feedback_en: "Could not reach the AI. Check the internet and try again.",
+                feedback_en: "The AI took too long to answer. Please press the button again.",
                 feedback_ar: ""
             };
             try {
